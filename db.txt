@@ -1,0 +1,148 @@
+ public partial class dailywork : Form
+    {
+        SqlConnection con = new SqlConnection("Server=.;database=sajidata;uid=sa;pwd=sa");
+        public dailywork()
+        {
+            InitializeComponent();
+        }
+        
+        string val,dsal,monname;
+        int flag;
+        private void dailywork_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                DateTime d = DateTime.Today.Date;
+                //string dt = d.Year.ToString();
+                int mn = d.Month;
+                monname = gmnth(mn);
+                //textBox1.Text = d.Day.ToString() + '-'+mnt+'-' + d.Year;
+                //string cc = textBox1.Text.ToString().Trim();
+                //str = cc.Substring(0,7)+ dt.Substring(2, 2);
+                //str = d.Day.ToString() + '-' + mnt + '-' + dt.Substring(2, 2);
+                //textBox1.Text = d.Day.ToString() + '-' + mnt + '-' + dt.Substring(2, 2); 
+
+                comboadd();
+                comboBox1.SelectedItem = d.Day;
+                comboBox2.SelectedItem = monname;
+                comboBox3.SelectedItem = d.Year;
+                //str = comboBox1.Text + '-' + comboBox2.Text + '-' + comboBox3.Text.Substring(2, 2);
+                con.Open();
+                SqlCommand cmd = new SqlCommand("select dsal from salsett", con);
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                DataSet ds = new DataSet();
+                da.Fill(ds, "det");
+                dsal = ds.Tables["det"].Rows[0].ItemArray[0].ToString();
+            }
+            catch
+            {
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            flag = 0;
+            val="Yes";
+            try
+            {
+                SqlCommand cmd = new SqlCommand("insert into works values('" + comboBox1.Text + '-' + comboBox2.Text + '-' + comboBox3.Text.Substring(2, 2) + "','" + val + "'," + dsal + ",0,'" + comboBox2.Text + "'," + comboBox3.Text + "," + comboBox1.Text + ")", con);
+                //SqlCommand cmd = new SqlCommand("delete from works", con);
+                cmd.ExecuteNonQuery();
+
+
+            }
+            catch
+            {
+
+                MessageBox.Show("Invalid Date or Work already Added!!", "Error!!");
+
+                flag = flag + 1;
+
+            }
+            if (flag == 0)
+            {
+                MessageBox.Show("One work added", "One Work");
+                Close();
+            }
+        }
+
+        
+        public string gmnth(int num)
+        {
+            string mnth="";
+            if (num == 01 | num == 1)
+              mnth = "jan";
+            else if (num == 02 | num == 2)
+                mnth = "feb";
+            else if (num == 03 | num == 3)
+                mnth = "mar";
+            else if (num == 04 | num == 4)
+                mnth = "apr";
+            else if (num == 05 | num == 5)
+                mnth = "may";
+            else if (num == 06 | num == 6)
+                mnth = "jun";
+            else if (num == 07 | num == 7)
+                mnth = "jul";
+            else if (num == 08 | num == 8)
+                mnth = "aug";
+            else if (num == 09 | num == 9)
+                mnth = "sep";
+            else if (num == 10 | num == 10)
+                mnth = "oct";
+            else if (num == 11 | num == 11)
+                mnth = "nov";
+            else if (num == 12 | num == 12)
+                mnth = "dec";
+            return mnth;
+        }
+        void comboadd()
+        {
+            for(int i=1;i<=31;i++)
+                comboBox1.Items.Add(i);
+            for(int i=2009;i<=2050;i++)
+                comboBox3.Items.Add(i);
+        }
+            
+        private void button2_Click(object sender, EventArgs e)
+        {
+            flag = 0;
+            val = "No";
+            try
+            {
+                SqlCommand cmd = new SqlCommand("insert into works values('" + comboBox1.Text + '-' + comboBox2.Text + '-' + comboBox3.Text.Substring(2, 2) + "','" + val + "',0,0,'" + comboBox2.Text + "'," + comboBox3.Text + "," + comboBox1.Text + ")", con);
+                //SqlCommand cmd = new SqlCommand("delete from works", con);
+                cmd.ExecuteNonQuery();
+
+
+            }
+            catch
+            {
+
+                MessageBox.Show("Invalid Date or Work already Added!!", "Error!!");
+
+                flag = flag + 1;
+
+            }
+            if (flag == 0)
+            {
+                MessageBox.Show("No work today-Added!!", "No Work");
+                Close();
+            }
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            comboBox1.Items.Clear();
+            if (comboBox2.Text == "feb")
+            {
+                
+                for (int i = 1; i <= 29; i++)
+                    comboBox1.Items.Add(i);
+            }
+            else
+                for (int i = 1; i <= 31; i++)
+                    comboBox1.Items.Add(i);
+
+        }   
+    }
